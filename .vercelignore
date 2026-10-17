@@ -1,0 +1,3 @@
+# Keep reference footage and macOS metadata out of Vercel deployments
+*.mp4
+.DS_Store
