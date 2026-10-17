@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Wave Rider</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="game">
+  <canvas id="c"></canvas>
+  <div id="touch"></div>
+  <div id="underwater"></div>
+  <div id="shieldfx"></div>
+  <div id="flash"></div>
+
+  <!-- top right: seashells + best -->
+  <div id="topright">
+    <div id="shells-wrap" class="big"><span id="shells">0</span><img data-icon="shell" alt=""></div>
+    <div class="best"><span id="best">0</span><img data-icon="crown" alt=""><span id="best-mode"></span></div>
+  </div>
+
+  <!-- in-run HUD -->
+  <div id="hud" class="hidden">
+    <div id="hud-meters">0M</div>
+    <div id="hud-score"><img data-icon="star" alt=""><span id="x2" class="hidden">X2</span><span id="score">0</span></div>
+    <div id="hud-powers"></div>
+    <div id="powertoast"></div>
+  </div>
+  <div id="toasts"></div>
+  <div id="saving"></div>
+
+  <!-- title screen -->
+  <div id="title" class="hidden">
+    <div class="logo">
+      <svg class="swoosh" viewBox="0 0 400 120" aria-hidden="true">
+        <path d="M10 80 Q 90 20 170 60 T 330 50 Q 370 46 395 30 L 395 70 Q 360 100 300 90 T 170 100 Q 90 110 10 80 Z" fill="#38b6e8"/>
+        <path d="M30 82 Q 100 40 175 72 T 330 64 Q 360 60 385 48" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+        <path d="M300 30 q 30 -40 80 -25 q -35 5 -55 30 z M330 28 q 40 -10 62 20 q -30 -14 -55 -8 z" fill="#3fbf3a"/>
+      </svg>
+      <div class="w1">WAVE</div>
+      <div class="w2">RIDER</div>
+    </div>
+    <div class="press">PRESS TO PLAY!</div>
+    <button id="modebtn" class="modebtn">NORMAL MODE</button>
+    <div class="bottombar">
+      <div class="group">
+        <button class="sq" data-open="settings" title="Settings">
+          <svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm9 4.6v-2.2l-2.4-.5a7 7 0 0 0-.7-1.7l1.4-2-1.6-1.6-2 1.4a7 7 0 0 0-1.7-.7L13.1 3h-2.2l-.5 2.4a7 7 0 0 0-1.7.7l-2-1.4-1.6 1.6 1.4 2a7 7 0 0 0-.7 1.7L3 10.9v2.2l2.4.5c.2.6.4 1.2.7 1.7l-1.4 2 1.6 1.6 2-1.4c.5.3 1.1.5 1.7.7l.5 2.4h2.2l.5-2.4a7 7 0 0 0 1.7-.7l2 1.4 1.6-1.6-1.4-2c.3-.5.5-1.1.7-1.7z"/></svg>
+        </button>
+        <button class="sq" data-open="missions" title="Missions">
+          <svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><rect x="9" y="4.6" width="12" height="2.8" rx="1.4"/><rect x="9" y="10.6" width="12" height="2.8" rx="1.4"/><rect x="9" y="16.6" width="12" height="2.8" rx="1.4"/></svg>
+          <span id="dot-missions" class="dot hidden"></span>
+        </button>
+        <button class="sq" data-open="info" title="How to play">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.4"/><rect x="9.6" y="9" width="4.8" height="12" rx="1.6"/></svg>
+        </button>
+      </div>
+      <div class="nameplate" data-open="settings"><span id="nametag">player</span><span class="wave">≈</span></div>
+      <div class="group">
+        <button class="sq" data-open="leaderboard" title="Leaderboard">
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 7.3l5-.7z"/><rect x="3" y="18" width="18" height="4" rx="1.5"/></svg>
+        </button>
+        <button class="sq" data-open="shop" title="Shop">
+          <svg viewBox="0 0 24 24"><path d="M20.5 3.5c-4-1.2-11 2-15 9-1.5 2.6-2.3 5.6-2 8 2.4.3 5.4-.5 8-2 7-4 10.2-11 9-15z"/><path d="M5 19L19 5" stroke="#2b4f9a" stroke-width="1.6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dim" class="hidden"></div>
+
+  <!-- settings -->
+  <div class="panel hidden" id="panel-settings">
+    <div class="tab-title">SETTINGS</div>
+    <button class="close">✕</button>
+    <div class="body">
+      <h3>ACCOUNT</h3>
+      <label class="row">NAME <input id="set-name" maxlength="16" spellcheck="false"></label>
+      <h3>GAME</h3>
+      <div class="row toggles">
+        <button id="set-sound" class="tog"><svg viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3z"/><path d="M15 8q3 4 0 8M18 5q5 7 0 14" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>SOUND</span></button>
+        <button id="set-music" class="tog"><svg viewBox="0 0 24 24"><path d="M9 4l11-2v13.5a3 3 0 1 1-2-2.8V6.4L11 7.6v10a3 3 0 1 1-2-2.8z"/></svg><span>MUSIC</span></button>
+      </div>
+      <button id="set-notify" class="check row">NOTIFICATION POPUPS <i></i></button>
+      <button id="set-reset" class="danger">RESET PROGRESS</button>
+      <p class="fine">Progress is saved in this browser only.</p>
+    </div>
+  </div>
+
+  <!-- missions / achievements -->
+  <div class="panel hidden" id="panel-missions">
+    <div class="tab-title" id="missions-title">DAILY MISSION</div>
+    <button class="close">✕</button>
+    <div class="body"><div id="missions-list" class="scroll"></div></div>
+    <div class="bottomtabs">
+      <button class="pill active" data-group="missions" data-tab="daily">DAILY MISSION</button>
+      <button class="pill" data-group="missions" data-tab="ach">ACHIEVEMENT</button>
+    </div>
+  </div>
+
+  <!-- leaderboard -->
+  <div class="panel hidden" id="panel-leaderboard">
+    <div class="tab-title">LEADERBOARD</div>
+    <button class="close">✕</button>
+    <div class="body">
+      <div class="seg">
+        <button class="pill active" data-group="lbmode" data-tab="normal">NORMAL</button>
+        <button class="pill" data-group="lbmode" data-tab="hard">HARD</button>
+      </div>
+      <div class="seg">
+        <button class="pill" data-group="lbper" data-tab="day">DAY</button>
+        <button class="pill" data-group="lbper" data-tab="week">WEEK</button>
+        <button class="pill" data-group="lbper" data-tab="month">MONTH</button>
+        <button class="pill active" data-group="lbper" data-tab="alltime">ALLTIME</button>
+      </div>
+      <div id="lb-list" class="scroll"></div>
+    </div>
+  </div>
+
+  <!-- info / tutorial -->
+  <div class="panel hidden" id="panel-info">
+    <div class="tab-title">HOW TO PLAY</div>
+    <button class="close">✕</button>
+    <div class="sidetabs">
+      <button class="pill active" data-group="info" data-tab="tutorial">CONTROLS</button>
+      <button class="pill" data-group="info" data-tab="powers">POWERUPS</button>
+      <button class="pill" data-group="info" data-tab="about">ABOUT</button>
+    </div>
+    <div class="body scroll">
+      <div class="info-page" data-page="tutorial">
+        <div class="keys"><span>▲</span><span>◀</span><span>▼</span><span>▶</span></div>
+        <p><b>↑ / W / Space</b> &nbsp;jump over low obstacles</p>
+        <p><b>↓ / S</b> &nbsp;dive under the water (and under hanging logs and pipes)</p>
+        <p><b>← → / A D</b> &nbsp;steer</p>
+        <p><b>Esc / P</b> &nbsp;pause</p>
+        <p class="note">On touch screens: drag sideways to steer, swipe up to jump, swipe down to dive.</p>
+        <p>Dive straight into a <b>turtle</b> and it will fling you high into the air!</p>
+        <p>Your board can take <b>one knock on each side</b>. Clip something and you get pushed the other way and that side cracks. Hit a cracked side again, or smash into something head-on, and the run is over.</p>
+        <p>You can land on top of boats, docks and fallen slabs.</p>
+      </div>
+      <div class="info-page hidden" data-page="powers">
+        <p><img data-icon="wrench" alt=""> <b>Wrench</b> repairs one cracked side of your board (left side first).</p>
+        <p><img data-icon="freeze" alt=""> <b>Freeze</b> slows you down by 25% for 15 seconds.</p>
+        <p><img data-icon="shield" alt=""> <b>Shield</b> absorbs one collision within 15 seconds.</p>
+        <p><img data-icon="magnet" alt=""> <b>Magnet</b> pulls nearby seashells to you for 15 seconds.</p>
+        <p><img data-icon="star" alt=""> <b>Star</b> doubles all points for 15 seconds.</p>
+        <p class="note">Powerups show up less often in <span class="red">Hard Mode</span>.</p>
+      </div>
+      <div class="info-page hidden" data-page="about">
+        <p>A fan-made remake of the browser surfing game <b>Wave Rider</b>. All code, art and sound here are original and made procedurally in the browser.</p>
+        <p>Spend seashells in the shop to unlock new boards, finish daily missions and achievements for extra shells, and try Hard Mode once you get the hang of it.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- shop -->
+  <div id="shop" class="hidden">
+    <div class="shop-title">SHOP</div>
+    <div id="shop-card">
+      <div id="shop-name">CLASSIC SURFER</div>
+      <div class="stat-row"><span>Speed:</span><div class="sbar"><i id="st-speed"></i></div></div>
+      <div class="stat-row"><span>Accel:</span><div class="sbar"><i id="st-accel"></i></div></div>
+      <div class="stat-row"><span>Turn:</span><div class="sbar"><i id="st-turn"></i></div></div>
+    </div>
+    <div id="shop-soon" class="hidden">MORE COMING<br>SOON!</div>
+    <button id="shop-prev" class="gem left">◀</button>
+    <button id="shop-next" class="gem right">▶</button>
+    <button id="shop-action">SELECT</button>
+    <button id="shop-back" class="sq back" title="Back">
+      <svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6v2H3z"/><rect x="5" y="12" width="14" height="8" rx="1"/><rect x="10" y="14" width="4" height="6" fill="#2b4f9a"/></svg>
+    </button>
+  </div>
+
+  <!-- tutorial prompt -->
+  <div id="tutorial" class="hidden">
+    <div class="tut-box">
+      <div class="tut-title">TUTORIAL</div>
+      <div id="tut-text"></div>
+      <div id="tut-arrows" class="arrows"><span class="a-up">▲</span><span class="a-left">◀</span><span class="a-down">▼</span><span class="a-right">▶</span></div>
+      <div id="tut-touch"></div>
+    </div>
+  </div>
+
+  <!-- continue -->
+  <div id="continue" class="hidden">
+    <div class="cont-title">CONTINUE?</div>
+    <div id="cont-ring"><span id="cont-n">9</span></div>
+    <button id="cont-buy"><span id="cont-cost">50</span><img data-icon="shell" alt=""></button>
+    <button id="cont-skip">SKIP</button>
+  </div>
+
+  <!-- results -->
+  <div id="results" class="hidden">
+    <div class="res-logo"><span>WAVE</span> <span>RIDER</span></div>
+    <div class="stats">
+      <div class="stat"><b id="res-score">0</b><small>SCORE</small></div>
+      <div class="stat"><b id="res-best">0</b><small id="res-best-label">BEST</small></div>
+      <div class="stat"><b id="res-meters">0</b><small>METERS</small></div>
+      <div class="stat"><b id="res-shells">+0</b><small>SEASHELLS</small></div>
+    </div>
+    <div id="res-mode">NORMAL MODE</div>
+    <div class="tap">TAP TO CONTINUE</div>
+  </div>
+
+  <!-- pause -->
+  <div id="pause" class="hidden">
+    <div class="pause-title">PAUSED</div>
+    <div class="pause-sub">CLICK TO RESUME</div>
+  </div>
+</div>
+
+<script src="lib/three.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/textures.js"></script>
+<script src="js/save.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/world.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script>
+  WR.Save.load();
+  WR.UI.init();
+  WR.Game.init();
+</script>
+</body>
+</html>
